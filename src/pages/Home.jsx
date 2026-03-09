@@ -30,9 +30,9 @@ export default function Home() {
       <SectionDivider />
       <WhyChooseSection />
       <SectionDivider />
-      <TestimonialsSection />
-      <SectionDivider />
       <ClinicsSection />
+      <SectionDivider />
+      <TestimonialsSection />
       <SectionDivider />
       <ContactSection />
       <Footer />
