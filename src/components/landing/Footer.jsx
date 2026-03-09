@@ -1,5 +1,6 @@
 import React from 'react';
 import { Mail, Phone } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
 
 const LOGO_URL =
   'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a85e7b300c60d4ed81dada/c78f8b0cf_ChatGPTImage4mar202611_12_59.png';
@@ -8,22 +9,69 @@ const SUPPORT_PHONE_DISPLAY = '(305) 610-2811';
 const SUPPORT_PHONE_LINK = 'tel:3056102811';
 
 export default function Footer() {
+  const { language } = useLanguage();
+  const copy =
+    language === 'es'
+      ? {
+          quickLinksTitle: 'Enlaces Rapidos',
+          legalTitle: 'Legal',
+          connectTitle: 'Conecta con Nosotros',
+          aboutUs: 'Nosotros',
+          services: 'Servicios',
+          partner: 'Para Clinicas',
+          contact: 'Contacto',
+          admin: 'Panel Admin',
+          privacy: 'Politica de Privacidad',
+          terms: 'Terminos de Servicio',
+          accessibility: 'Accesibilidad',
+          phoneLabel: 'Telefono:',
+          emailLabel: 'Correo:',
+          brandText:
+            'Transporte medico no emergente, seguro, confiable y profesional en el Norte de Virginia.',
+          rights: 'Todos los derechos reservados.',
+          serving: 'Sirviendo al Norte de Virginia con cuidado y confiabilidad',
+          emailSocial: 'Correo',
+          phoneSocial: 'Telefono',
+        }
+      : {
+          quickLinksTitle: 'Quick Links',
+          legalTitle: 'Legal',
+          connectTitle: 'Connect With Us',
+          aboutUs: 'About Us',
+          services: 'Services',
+          partner: 'Partner With Us',
+          contact: 'Contact',
+          admin: 'Admin Dashboard',
+          privacy: 'Privacy Policy',
+          terms: 'Terms of Service',
+          accessibility: 'Accessibility',
+          phoneLabel: 'Phone:',
+          emailLabel: 'Email:',
+          brandText:
+            'Safe, reliable, and professional non-emergency medical transportation serving Northern Virginia.',
+          rights: 'All rights reserved.',
+          serving: 'Serving Northern Virginia with care and reliability',
+          emailSocial: 'Email',
+          phoneSocial: 'Phone',
+        };
+
   const quickLinks = [
-    { label: 'About Us', href: '#about' },
-    { label: 'Services', href: '#services' },
-    { label: 'Partner With Us', href: '#partner' },
-    { label: 'Contact', href: '#contact' },
+    { label: copy.aboutUs, href: '#about' },
+    { label: copy.services, href: '#services' },
+    { label: copy.partner, href: '#partner' },
+    { label: copy.contact, href: '#contact' },
+    { label: copy.admin, href: '/admin' },
   ];
 
   const legal = [
-    { label: 'Privacy Policy', href: '/privacy-policy.html' },
-    { label: 'Terms of Service', href: '/terms-of-service.html' },
-    { label: 'Accessibility', href: '/accessibility.html' },
+    { label: copy.privacy, href: '/privacy-policy.html' },
+    { label: copy.terms, href: '/terms-of-service.html' },
+    { label: copy.accessibility, href: '/accessibility.html' },
   ];
 
   const socialLinks = [
-    { icon: Mail, href: `mailto:${SUPPORT_EMAIL}`, label: 'Email' },
-    { icon: Phone, href: SUPPORT_PHONE_LINK, label: 'Phone' },
+    { icon: Mail, href: `mailto:${SUPPORT_EMAIL}`, label: copy.emailSocial },
+    { icon: Phone, href: SUPPORT_PHONE_LINK, label: copy.phoneSocial },
   ];
 
   return (
@@ -39,15 +87,12 @@ export default function Footer() {
                 className='h-16 sm:h-24 w-auto object-contain brightness-200'
               />
             </div>
-            <p className='text-blue-100 text-sm leading-relaxed'>
-              Safe, reliable, and professional non-emergency medical
-              transportation serving Northern Virginia.
-            </p>
+            <p className='text-blue-100 text-sm leading-relaxed'>{copy.brandText}</p>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className='text-lg font-bold mb-4'>Quick Links</h4>
+            <h4 className='text-lg font-bold mb-4'>{copy.quickLinksTitle}</h4>
             <ul className='space-y-3'>
               {quickLinks.map((link, index) => (
                 <li key={index}>
@@ -63,7 +108,7 @@ export default function Footer() {
 
           {/* Legal */}
           <div>
-            <h4 className='text-lg font-bold mb-4'>Legal</h4>
+            <h4 className='text-lg font-bold mb-4'>{copy.legalTitle}</h4>
             <ul className='space-y-3'>
               {legal.map((item, index) => (
                 <li key={index}>
@@ -85,15 +130,15 @@ export default function Footer() {
 
           {/* Contact & Social */}
           <div>
-            <h4 className='text-lg font-bold mb-4'>Connect With Us</h4>
+            <h4 className='text-lg font-bold mb-4'>{copy.connectTitle}</h4>
             <div className='space-y-3 mb-6'>
               <p className='text-blue-100 text-sm'>
-                <span className='font-semibold'>Phone:</span>
+                <span className='font-semibold'>{copy.phoneLabel}</span>
                 <br />
                 {SUPPORT_PHONE_DISPLAY}
               </p>
               <p className='text-blue-100 text-sm'>
-                <span className='font-semibold'>Email:</span>
+                <span className='font-semibold'>{copy.emailLabel}</span>
                 <br />
                 {SUPPORT_EMAIL}
               </p>
@@ -119,11 +164,10 @@ export default function Footer() {
         <div className='pt-8 border-t border-white/10'>
           <div className='flex flex-col md:flex-row justify-between items-center gap-4'>
             <p className='text-blue-200 text-sm text-center md:text-left'>
-              © {new Date().getFullYear()} Nova Care Transportation. All rights
-              reserved.
+              © {new Date().getFullYear()} Nova Care Transportation. {copy.rights}
             </p>
             <p className='text-blue-200 text-sm text-center md:text-right'>
-              Serving Northern Virginia with care and reliability
+              {copy.serving}
             </p>
           </div>
         </div>

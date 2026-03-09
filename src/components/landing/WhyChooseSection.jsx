@@ -1,39 +1,87 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2, Clock, Users, Car, MapPin } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function WhyChooseSection() {
+  const { language } = useLanguage();
+  const copy =
+    language === 'es'
+      ? {
+          title: 'Por Que Elegirnos',
+          subtitle: 'Excelencia en cada viaje, cuidado en cada detalle',
+          reasons: [
+            {
+              icon: Clock,
+              title: 'Garantia de Puntualidad',
+              description:
+                'Entendemos la importancia de las citas medicas y garantizamos puntualidad en cada servicio.',
+            },
+            {
+              icon: Users,
+              title: 'Conductores Profesionales y Corteses',
+              description:
+                'Nuestros conductores capacitados brindan asistencia compasiva durante todo el trayecto.',
+            },
+            {
+              icon: Car,
+              title: 'Vehiculos Limpios y Comodos',
+              description:
+                'Flota moderna con acceso para silla de ruedas y control de clima para mayor comodidad.',
+            },
+            {
+              icon: CheckCircle2,
+              title: 'Rutas Programadas para Clinicas',
+              description:
+                'Rutas estructuradas para reducir ausencias y mejorar la asistencia de pacientes.',
+            },
+            {
+              icon: MapPin,
+              title: 'Servicio en el Norte de Virginia',
+              description:
+                'Cobertura en Herndon, Reston, Fairfax, Ashburn y zonas cercanas.',
+            },
+          ],
+        }
+      : {
+          title: 'Why Choose Us',
+          subtitle: 'Excellence in every ride, care in every detail',
+          reasons: [
+            {
+              icon: Clock,
+              title: 'On-Time Guarantee',
+              description:
+                'We understand the importance of medical appointments and ensure punctual service every time.',
+            },
+            {
+              icon: Users,
+              title: 'Professional & Courteous Drivers',
+              description:
+                'Our trained and certified drivers provide compassionate care and assistance throughout your journey.',
+            },
+            {
+              icon: Car,
+              title: 'Clean & Comfortable Vehicles',
+              description:
+                'Modern, well-maintained fleet with wheelchair accessibility and climate control for your comfort.',
+            },
+            {
+              icon: CheckCircle2,
+              title: 'Scheduled Routes for Clinics',
+              description:
+                'Structured transportation routes designed to reduce no-shows and improve patient attendance.',
+            },
+            {
+              icon: MapPin,
+              title: 'Serving Northern Virginia',
+              description:
+                'Comprehensive coverage across Herndon, Reston, Fairfax, Ashburn, and surrounding areas.',
+            },
+          ],
+        };
+
   const reasons = [
-    {
-      icon: Clock,
-      title: 'On-Time Guarantee',
-      description:
-        'We understand the importance of medical appointments and ensure punctual service every time.',
-    },
-    {
-      icon: Users,
-      title: 'Professional & Courteous Drivers',
-      description:
-        'Our trained and certified drivers provide compassionate care and assistance throughout your journey.',
-    },
-    {
-      icon: Car,
-      title: 'Clean & Comfortable Vehicles',
-      description:
-        'Modern, well-maintained fleet with wheelchair accessibility and climate control for your comfort.',
-    },
-    {
-      icon: CheckCircle2,
-      title: 'Scheduled Routes for Clinics',
-      description:
-        'Structured transportation routes designed to reduce no-shows and improve patient attendance.',
-    },
-    {
-      icon: MapPin,
-      title: 'Serving Northern Virginia',
-      description:
-        'Comprehensive coverage across Herndon, Reston, Fairfax, Ashburn, and surrounding areas.',
-    },
+    ...copy.reasons,
   ];
 
   return (
@@ -48,10 +96,10 @@ export default function WhyChooseSection() {
           transition={{ duration: 0.6 }}
           className='text-center mb-16'>
           <h2 className='text-3xl sm:text-4xl md:text-5xl font-bold text-[#1E3A8A] mb-6'>
-            Why Choose Us
+            {copy.title}
           </h2>
           <p className='text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto'>
-            Excellence in every ride, care in every detail
+            {copy.subtitle}
           </p>
         </motion.div>
 

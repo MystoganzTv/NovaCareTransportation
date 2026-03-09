@@ -1,12 +1,35 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Clock, Heart } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function AboutSection() {
+  const { language } = useLanguage();
+  const copy =
+    language === 'es'
+      ? {
+          title: 'Sobre Nova Care Transportation',
+          paragraph:
+            'Nova Care Transportation brinda servicios de transporte medico no emergente, estructurados y confiables para adultos mayores, pacientes de terapia y centros ambulatorios. Nuestra mision es reducir citas perdidas garantizando seguridad, comodidad y puntualidad.',
+          stats: [
+            { icon: Shield, label: 'Anios de Servicio', value: '1+' },
+            { icon: Clock, label: 'Tasa de Puntualidad', value: '99%' },
+            { icon: Heart, label: 'Pacientes Satisfechos', value: '5,000+' },
+          ],
+        }
+      : {
+          title: 'About Nova Care Transportation',
+          paragraph:
+            'Nova Care Transportation provides structured, dependable non-emergency medical transportation services for seniors, therapy patients, and outpatient facilities. Our mission is to reduce missed appointments while ensuring safety, comfort, and punctuality.',
+          stats: [
+            { icon: Shield, label: 'Years of Service', value: '1+' },
+            { icon: Clock, label: 'On-Time Rate', value: '99%' },
+            { icon: Heart, label: 'Happy Patients', value: '5,000+' },
+          ],
+        };
+
   const stats = [
-    { icon: Shield, label: 'Years of Service', value: '1+' },
-    { icon: Clock, label: 'On-Time Rate', value: '99%' },
-    { icon: Heart, label: 'Happy Patients', value: '5,000+' },
+    ...copy.stats,
   ];
 
   return (
@@ -21,16 +44,12 @@ export default function AboutSection() {
           transition={{ duration: 0.6 }}
           className='text-center mb-16'>
           <h2 className='text-3xl sm:text-4xl md:text-5xl font-bold text-[#1E3A8A] mb-6'>
-            About Nova Care Transportation
+            {copy.title}
           </h2>
 
           <div className='max-w-3xl mx-auto'>
             <p className='text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed'>
-              Nova Care Transportation provides structured, dependable
-              non-emergency medical transportation services for seniors, therapy
-              patients, and outpatient facilities. Our mission is to reduce
-              missed appointments while ensuring safety, comfort, and
-              punctuality.
+              {copy.paragraph}
             </p>
           </div>
         </motion.div>

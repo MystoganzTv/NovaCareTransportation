@@ -1,82 +1,170 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Quote, Star } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function TestimonialsSection() {
-  const testimonials = [
-    {
-      name: 'Maria R.',
-      role: 'Daughter of Patient',
-      quote:
-        'Nova Care has been a blessing for my mom. They are always on time, patient, and very respectful.',
-    },
-    {
-      name: 'James T.',
-      role: 'Outpatient Client',
-      quote:
-        'I use their rides for therapy appointments every week. Reliable service and excellent communication.',
-    },
-    {
-      name: 'Valley Family Clinic',
-      role: 'Partner Clinic',
-      quote:
-        'Their route-based transportation helped reduce missed appointments and improved patient attendance.',
-    },
-    {
-      name: 'Carlos M.',
-      role: 'Patient Family Member',
-      quote:
-        'Their team is kind and dependable. Every ride has been safe, smooth, and on schedule.',
-    },
-    {
-      name: 'Angela P.',
-      role: 'Regular Rider',
-      quote:
-        'Booking is easy and communication is clear. I always know my ride details ahead of time.',
-    },
-    {
-      name: 'Northwood Medical Office',
-      role: 'Clinic Coordinator',
-      quote:
-        'Nova Care improved attendance for our patients and made transportation coordination much easier.',
-    },
-    {
-      name: 'Elena G.',
-      role: 'Family Caregiver',
-      quote:
-        'Their drivers are very patient with my father and always help him get in and out safely.',
-    },
-    {
-      name: 'Robert L.',
-      role: 'Dialysis Client',
-      quote:
-        'Consistent service every week. They arrive on time and keep me informed if traffic causes any delay.',
-    },
-    {
-      name: 'Oak Ridge Clinic',
-      role: 'Front Desk Team',
-      quote:
-        'Since partnering with Nova Care, our no-show rate has dropped and scheduling is much smoother.',
-    },
-    {
-      name: 'Patricia S.',
-      role: 'Senior Client',
-      quote:
-        'I feel respected and comfortable on every trip. The drivers are friendly and professional.',
-    },
-    {
-      name: 'Daniel K.',
-      role: 'Patient Family Member',
-      quote:
-        'Excellent communication and dependable pickup times. We trust them for all appointment rides.',
-    },
-    {
-      name: 'Lakeview Rehab Center',
-      role: 'Care Coordinator',
-      quote:
-        'Great partner for route-based transportation. Their team is organized and easy to work with.',
-    },
-  ];
+  const { language } = useLanguage();
+  const copy =
+    language === 'es'
+      ? {
+          title: 'Testimonios',
+          subtitle:
+            'Lo que dicen familias y socios sobre trabajar con Nova Care',
+          testimonials: [
+            {
+              name: 'Maria R.',
+              role: 'Hija de Paciente',
+              quote:
+                'Nova Care ha sido una bendicion para mi mama. Siempre llegan a tiempo y son muy respetuosos.',
+            },
+            {
+              name: 'James T.',
+              role: 'Paciente Ambulatorio',
+              quote:
+                'Uso sus traslados cada semana para terapia. Servicio confiable y excelente comunicacion.',
+            },
+            {
+              name: 'Valley Family Clinic',
+              role: 'Clinica Asociada',
+              quote:
+                'Sus rutas programadas redujeron ausencias y mejoraron la asistencia de pacientes.',
+            },
+            {
+              name: 'Carlos M.',
+              role: 'Familiar de Paciente',
+              quote:
+                'Su equipo es amable y confiable. Cada viaje ha sido seguro, comodo y puntual.',
+            },
+            {
+              name: 'Angela P.',
+              role: 'Cliente Frecuente',
+              quote:
+                'Reservar es facil y la comunicacion es clara. Siempre recibo los detalles a tiempo.',
+            },
+            {
+              name: 'Northwood Medical Office',
+              role: 'Coordinador de Clinica',
+              quote:
+                'Nova Care mejoro la asistencia de nuestros pacientes y facilito la coordinacion.',
+            },
+            {
+              name: 'Elena G.',
+              role: 'Cuidadora Familiar',
+              quote:
+                'Sus conductores son pacientes con mi padre y siempre lo ayudan de forma segura.',
+            },
+            {
+              name: 'Robert L.',
+              role: 'Cliente de Dialisis',
+              quote:
+                'Servicio constante cada semana. Llegan puntuales y avisan cuando hay trafico.',
+            },
+            {
+              name: 'Oak Ridge Clinic',
+              role: 'Equipo de Recepcion',
+              quote:
+                'Desde que trabajamos con Nova Care, la tasa de ausencias bajo notablemente.',
+            },
+            {
+              name: 'Patricia S.',
+              role: 'Cliente Senior',
+              quote:
+                'Me siento respetada y comoda en cada viaje. Los conductores son atentos y profesionales.',
+            },
+            {
+              name: 'Daniel K.',
+              role: 'Familiar de Paciente',
+              quote:
+                'Excelente comunicacion y puntualidad. Confiamos en ellos para todas las citas.',
+            },
+            {
+              name: 'Lakeview Rehab Center',
+              role: 'Coordinador de Atencion',
+              quote:
+                'Gran socio para transporte por rutas. Equipo organizado y facil de trabajar.',
+            },
+          ],
+        }
+      : {
+          title: 'Testimonials',
+          subtitle: 'What families and partners say about working with Nova Care',
+          testimonials: [
+            {
+              name: 'Maria R.',
+              role: 'Daughter of Patient',
+              quote:
+                'Nova Care has been a blessing for my mom. They are always on time, patient, and very respectful.',
+            },
+            {
+              name: 'James T.',
+              role: 'Outpatient Client',
+              quote:
+                'I use their rides for therapy appointments every week. Reliable service and excellent communication.',
+            },
+            {
+              name: 'Valley Family Clinic',
+              role: 'Partner Clinic',
+              quote:
+                'Their route-based transportation helped reduce missed appointments and improved patient attendance.',
+            },
+            {
+              name: 'Carlos M.',
+              role: 'Patient Family Member',
+              quote:
+                'Their team is kind and dependable. Every ride has been safe, smooth, and on schedule.',
+            },
+            {
+              name: 'Angela P.',
+              role: 'Regular Rider',
+              quote:
+                'Booking is easy and communication is clear. I always know my ride details ahead of time.',
+            },
+            {
+              name: 'Northwood Medical Office',
+              role: 'Clinic Coordinator',
+              quote:
+                'Nova Care improved attendance for our patients and made transportation coordination much easier.',
+            },
+            {
+              name: 'Elena G.',
+              role: 'Family Caregiver',
+              quote:
+                'Their drivers are very patient with my father and always help him get in and out safely.',
+            },
+            {
+              name: 'Robert L.',
+              role: 'Dialysis Client',
+              quote:
+                'Consistent service every week. They arrive on time and keep me informed if traffic causes any delay.',
+            },
+            {
+              name: 'Oak Ridge Clinic',
+              role: 'Front Desk Team',
+              quote:
+                'Since partnering with Nova Care, our no-show rate has dropped and scheduling is much smoother.',
+            },
+            {
+              name: 'Patricia S.',
+              role: 'Senior Client',
+              quote:
+                'I feel respected and comfortable on every trip. The drivers are friendly and professional.',
+            },
+            {
+              name: 'Daniel K.',
+              role: 'Patient Family Member',
+              quote:
+                'Excellent communication and dependable pickup times. We trust them for all appointment rides.',
+            },
+            {
+              name: 'Lakeview Rehab Center',
+              role: 'Care Coordinator',
+              quote:
+                'Great partner for route-based transportation. Their team is organized and easy to work with.',
+            },
+          ],
+        };
+  const testimonials = copy.testimonials;
   const pageSize = 3;
   const testimonialPages = useMemo(() => {
     const pages = [];
@@ -107,10 +195,10 @@ export default function TestimonialsSection() {
           transition={{ duration: 0.6 }}
           className='text-center mb-14 md:mb-16'>
           <h2 className='text-3xl sm:text-4xl md:text-5xl font-bold text-[#1E3A8A] mb-6'>
-            Testimonials
+            {copy.title}
           </h2>
           <p className='text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto'>
-            What families and partners say about working with Nova Care
+            {copy.subtitle}
           </p>
         </motion.div>
 
