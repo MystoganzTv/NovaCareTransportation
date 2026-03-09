@@ -6,9 +6,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Phone, Mail, MapPin, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
-const RESERVE_BANNER_IMAGE =
-  '/banner/NovaCare-Banner.png';
-
 const getTodayDateString = () => {
   const now = new Date();
   const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
@@ -22,28 +19,27 @@ export default function ContactSection() {
       ? {
           title: 'Contactanos',
           subtitle:
-            'Listo para un transporte medico confiable? Contactanos hoy.',
+            'Listo para colaborar con NovaCare? Coordinemos una reunion.',
           contactInformation: 'Informacion de Contacto',
           infoText:
-            'Escribenos para agendar transporte, conversar sobre alianzas o resolver cualquier duda.',
-          reserveBannerTitle: 'Reserve su viaje',
-          reserveBannerSubtitle:
-            'Seleccione fecha y detalles, nosotros nos encargamos del resto.',
-          formTitle: 'Enviamos un mensaje',
+            'Escribenos para conversar sobre alianzas con clinicas, centros medicos y organizaciones de salud.',
+          formTitle: 'Solicitar reunion de alianza',
           fullName: 'Nombre Completo',
+          organizationName: 'Nombre de Clinica u Organizacion',
           emailAddress: 'Correo Electronico',
           phoneNumber: 'Numero de Telefono',
-          rideDate: 'Fecha del Viaje',
+          meetingDate: 'Fecha Preferida de Reunion',
           message: 'Mensaje',
-          messagePlaceholder: 'Cuentanos sobre tus necesidades de transporte...',
-          sendMessage: 'Enviar Mensaje',
+          messagePlaceholder:
+            'Cuentanos sobre tu centro, volumen de pacientes y necesidades de transporte.',
+          sendMessage: 'Enviar Solicitud',
           sending: 'Enviando...',
-          sentSuccess: 'Mensaje enviado. Te responderemos pronto.',
+          sentSuccess: 'Solicitud enviada. Te responderemos pronto.',
           sendError:
             'No pudimos enviar tu mensaje ahora. Llamanos al (305) 610-2811 o escribe a enrique.padron853@gmail.com.',
-          dateError: 'Selecciona hoy o una fecha futura para tu viaje.',
-          subjectPrefix: 'Nueva solicitud de',
-          requestType: 'Solicitud de Viaje',
+          dateError: 'Selecciona hoy o una fecha futura para la reunion.',
+          subjectPrefix: 'Nueva solicitud de reunion de alianza de',
+          requestType: 'Solicitud de Reunion de Alianza',
           notProvided: 'No proporcionado',
           phoneLabel: 'Telefono',
           emailLabel: 'Correo',
@@ -54,28 +50,27 @@ export default function ContactSection() {
       : {
           title: 'Get In Touch',
           subtitle:
-            'Ready to experience reliable medical transportation? Contact us today.',
+            'Ready to partner with NovaCare? Let us schedule a meeting.',
           contactInformation: 'Contact Information',
           infoText:
-            'Reach out to schedule transportation, discuss partnership opportunities, or ask any questions about our services.',
-          reserveBannerTitle: 'Reserve Your Ride',
-          reserveBannerSubtitle:
-            'Choose your date and details. We will take care of the rest.',
-          formTitle: 'Send us a message',
+            'Reach out to discuss partnership opportunities with clinics, healthcare facilities, and care coordinators.',
+          formTitle: 'Request a Partnership Meeting',
           fullName: 'Full Name',
+          organizationName: 'Clinic or Organization Name',
           emailAddress: 'Email Address',
           phoneNumber: 'Phone Number',
-          rideDate: 'Ride Date',
+          meetingDate: 'Preferred Meeting Date',
           message: 'Message',
-          messagePlaceholder: 'Tell us about your transportation needs...',
-          sendMessage: 'Send Message',
+          messagePlaceholder:
+            'Tell us about your facility, patient volume, and transportation needs.',
+          sendMessage: 'Send Request',
           sending: 'Sending...',
-          sentSuccess: "Message sent! We'll get back to you soon.",
+          sentSuccess: "Request sent! We'll get back to you soon.",
           sendError:
             'We could not send your message right now. Please call us at (305) 610-2811 or email enrique.padron853@gmail.com.',
-          dateError: 'Please select today or a future date for your ride.',
-          subjectPrefix: 'New Inquiry from',
-          requestType: 'Ride Request',
+          dateError: 'Please select today or a future date for your meeting.',
+          subjectPrefix: 'New Partner Meeting Request from',
+          requestType: 'Partner Meeting Request',
           notProvided: 'Not provided',
           phoneLabel: 'Phone',
           emailLabel: 'Email',
@@ -86,27 +81,28 @@ export default function ContactSection() {
 
   const FORMSUBMIT_ENDPOINT =
     'https://formsubmit.co/ajax/enrique.padron853@gmail.com';
-  const minRideDate = getTodayDateString();
+  const minMeetingDate = getTodayDateString();
   const [formData, setFormData] = useState({
     name: '',
+    organization: '',
     email: '',
     phone: '',
-    rideDate: '',
+    meetingDate: '',
     message: '',
   });
 
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const handleRideDateChange = e => {
+  const handleMeetingDateChange = e => {
     const nextDate = e.target.value;
-    if (nextDate && nextDate < minRideDate) {
+    if (nextDate && nextDate < minMeetingDate) {
       setSubmitError(copy.dateError);
       return;
     }
 
     setSubmitError('');
-    setFormData(prev => ({ ...prev, rideDate: nextDate }));
+    setFormData(prev => ({ ...prev, meetingDate: nextDate }));
   };
 
   const handleSubmit = async e => {
@@ -114,7 +110,7 @@ export default function ContactSection() {
     setSubmitError('');
     setIsSubmitting(true);
 
-    if (formData.rideDate < minRideDate) {
+    if (formData.meetingDate < minMeetingDate) {
       setSubmitError(copy.dateError);
       setIsSubmitting(false);
       return;
@@ -128,9 +124,16 @@ export default function ContactSection() {
       payload.append('_replyto', formData.email);
       payload.append('Request Type', copy.requestType);
       payload.append('Full Name', formData.name);
+      payload.append(
+        'Clinic or Organization',
+        formData.organization || copy.notProvided
+      );
       payload.append('Email', formData.email);
       payload.append('Phone', formData.phone || copy.notProvided);
-      payload.append('Ride Date', formData.rideDate || copy.notProvided);
+      payload.append(
+        'Preferred Meeting Date',
+        formData.meetingDate || copy.notProvided
+      );
       payload.append('Service Area', copy.serviceAreaValue);
       payload.append('Message', formData.message);
 
@@ -149,9 +152,10 @@ export default function ContactSection() {
       setSubmitted(true);
       setFormData({
         name: '',
+        organization: '',
         email: '',
         phone: '',
-        rideDate: '',
+        meetingDate: '',
         message: '',
       });
     } catch {
@@ -268,24 +272,6 @@ export default function ContactSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
             className='bg-white rounded-3xl shadow-xl border border-gray-100 p-5 sm:p-8'>
-            <div className='relative mb-6 overflow-hidden rounded-2xl min-h-[140px] sm:min-h-[165px]'>
-              <img
-                src={RESERVE_BANNER_IMAGE}
-                alt='Reserve your ride banner'
-                className='absolute inset-0 h-full w-full object-cover'
-                loading='lazy'
-              />
-              <div className='absolute inset-0 bg-gradient-to-r from-[#0f172a]/80 via-[#1E3A8A]/65 to-[#1E3A8A]/35' />
-              <div className='relative z-10 px-5 py-6 sm:px-6 sm:py-7'>
-                <p className='text-white text-2xl sm:text-3xl font-bold leading-tight'>
-                  {copy.reserveBannerTitle}
-                </p>
-                <p className='text-white/90 text-sm sm:text-base mt-2 max-w-md'>
-                  {copy.reserveBannerSubtitle}
-                </p>
-              </div>
-            </div>
-
             <h3 className='text-2xl font-bold text-[#1E3A8A] mb-6'>
               {copy.formTitle}
             </h3>
@@ -326,6 +312,21 @@ export default function ContactSection() {
 
               <div>
                 <label className='block text-sm font-semibold text-gray-700 mb-2'>
+                  {copy.organizationName}
+                </label>
+                <Input
+                  type='text'
+                  placeholder='Nova Health Clinic'
+                  value={formData.organization}
+                  onChange={e =>
+                    setFormData({ ...formData, organization: e.target.value })
+                  }
+                  className='w-full px-4 py-3 rounded-xl border-gray-300 focus:border-[#2DD4BF] focus:ring-[#2DD4BF]'
+                />
+              </div>
+
+              <div>
+                <label className='block text-sm font-semibold text-gray-700 mb-2'>
                   {copy.phoneNumber}
                 </label>
                 <Input
@@ -341,13 +342,13 @@ export default function ContactSection() {
 
               <div>
                 <label className='block text-sm font-semibold text-gray-700 mb-2'>
-                  {copy.rideDate}
+                  {copy.meetingDate}
                 </label>
                 <Input
                   type='date'
-                  value={formData.rideDate}
-                  min={minRideDate}
-                  onChange={handleRideDateChange}
+                  value={formData.meetingDate}
+                  min={minMeetingDate}
+                  onChange={handleMeetingDateChange}
                   className='w-full px-4 py-3 rounded-xl border-gray-300 focus:border-[#2DD4BF] focus:ring-[#2DD4BF]'
                   required
                 />
