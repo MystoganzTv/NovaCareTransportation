@@ -6,6 +6,7 @@ import ServicesSection from '../components/landing/ServicesSection';
 import WhyChooseSection from '../components/landing/WhyChooseSection';
 import TestimonialsSection from '../components/landing/TestimonialsSection';
 import ClinicsSection from '../components/landing/ClinicsSection';
+import FaqSection from '../components/landing/FaqSection';
 import ContactSection from '../components/landing/ContactSection';
 import Footer from '../components/landing/Footer';
 
@@ -33,6 +34,8 @@ export default function Home() {
       <ClinicsSection />
       <SectionDivider />
       <TestimonialsSection />
+      <SectionDivider />
+      <FaqSection />
       <SectionDivider />
       <ContactSection />
       <Footer />

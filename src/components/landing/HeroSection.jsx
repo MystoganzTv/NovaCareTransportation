@@ -7,11 +7,11 @@ import { useLanguage } from '@/context/LanguageContext';
 
 const HERO_BG_IMAGE =
   'https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=1800&q=80&auto=format&fit=crop';
-const HERO_BG_FALLBACK = '/banner/NovaCare-Banner.png';
+const HERO_BG_FALLBACK = '/banner/NovaCare-Banner.jpg';
 
 const driverPhotos = [
   {
-    url: '/team/worker-01.png',
+    url: '/team/worker-01.jpg',
     fallback: '',
     caption: {
       en: 'Friendly NovaCare Staff',
@@ -23,7 +23,7 @@ const driverPhotos = [
     },
   },
   {
-    url: '/team/worker-02.png',
+    url: '/team/worker-02.jpg',
     fallback: '',
     caption: {
       en: 'Professional Daily Service',
@@ -35,7 +35,7 @@ const driverPhotos = [
     },
   },
   {
-    url: '/team/worker-03.png',
+    url: '/team/worker-03.jpg',
     fallback: '',
     caption: {
       en: 'Experienced Transportation Team',
@@ -47,7 +47,7 @@ const driverPhotos = [
     },
   },
   {
-    url: '/team/worker-04.png',
+    url: '/team/worker-04.jpg',
     fallback: '',
     caption: {
       en: 'Kind Support on Every Ride',
@@ -59,7 +59,7 @@ const driverPhotos = [
     },
   },
   {
-    url: '/team/worker-05.png',
+    url: '/team/worker-05.jpg',
     fallback: '',
     caption: {
       en: 'Comfort-Focused Transportation',
@@ -71,7 +71,7 @@ const driverPhotos = [
     },
   },
   {
-    url: '/team/worker-06.png',
+    url: '/team/worker-06.jpg',
     fallback: '',
     caption: {
       en: 'Everyday Friendly Professionals',
@@ -83,7 +83,7 @@ const driverPhotos = [
     },
   },
   {
-    url: '/team/worker-07.png',
+    url: '/team/worker-07.jpg',
     fallback: '',
     caption: {
       en: 'Compassionate Team Presence',
@@ -95,7 +95,7 @@ const driverPhotos = [
     },
   },
   {
-    url: '/team/worker-08.png',
+    url: '/team/worker-08.jpg',
     fallback: '',
     caption: {
       en: 'Trusted Transportation Specialist',

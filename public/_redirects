@@ -1,3 +1,10 @@
 /admin  /index.html  200
 /BookRide  /index.html  200
 /request-ride  /index.html  200
+/PrivacyPolicy  /privacy-policy.html  200
+/privacypolicy  /privacy-policy.html  200
+/TermsOfService  /terms-of-service.html  200
+/termsofservice  /terms-of-service.html  200
+/Accessibility  /accessibility.html  200
+/accessibility  /accessibility.html  200
+/*  /index.html  200

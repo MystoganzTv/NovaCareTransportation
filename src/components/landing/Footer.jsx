@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mail, Phone } from 'lucide-react';
+import { Mail, Phone, Instagram } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
 const LOGO_URL =
@@ -20,6 +20,7 @@ export default function Footer() {
           services: 'Servicios',
           partner: 'Para Clinicas',
           contact: 'Contacto',
+          faq: 'FAQ',
           admin: 'Panel Admin',
           privacy: 'Politica de Privacidad',
           terms: 'Terminos de Servicio',
@@ -32,6 +33,7 @@ export default function Footer() {
           serving: 'Sirviendo al Norte de Virginia con cuidado y confiabilidad',
           emailSocial: 'Correo',
           phoneSocial: 'Telefono',
+          instagramSocial: 'Instagram (Pronto)',
         }
       : {
           quickLinksTitle: 'Quick Links',
@@ -41,6 +43,7 @@ export default function Footer() {
           services: 'Services',
           partner: 'Partner With Us',
           contact: 'Contact',
+          faq: 'FAQ',
           admin: 'Admin Dashboard',
           privacy: 'Privacy Policy',
           terms: 'Terms of Service',
@@ -53,12 +56,14 @@ export default function Footer() {
           serving: 'Serving Northern Virginia with care and reliability',
           emailSocial: 'Email',
           phoneSocial: 'Phone',
+          instagramSocial: 'Instagram (Coming Soon)',
         };
 
   const quickLinks = [
     { label: copy.aboutUs, href: '#about' },
     { label: copy.services, href: '#services' },
     { label: copy.partner, href: '#partner' },
+    { label: copy.faq, href: '#faq' },
     { label: copy.contact, href: '#contact' },
     { label: copy.admin, href: '/admin' },
   ];
@@ -72,6 +77,7 @@ export default function Footer() {
   const socialLinks = [
     { icon: Mail, href: `mailto:${SUPPORT_EMAIL}`, label: copy.emailSocial },
     { icon: Phone, href: SUPPORT_PHONE_LINK, label: copy.phoneSocial },
+    { icon: Instagram, href: null, label: copy.instagramSocial },
   ];
 
   return (
@@ -80,14 +86,14 @@ export default function Footer() {
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12 mb-12'>
           {/* Brand */}
           <div>
-            <div className='flex items-center gap-2 mb-4'>
-              <img
-                src={LOGO_URL}
-                alt='Nova Care Transportation Logo'
-                className='h-16 sm:h-24 w-auto object-contain brightness-200'
-              />
-            </div>
-            <p className='text-blue-100 text-sm leading-relaxed'>{copy.brandText}</p>
+            <img
+              src={LOGO_URL}
+              alt='Nova Care Transportation Logo'
+              className='h-24 w-auto object-contain brightness-200 mb-4'
+            />
+            <p className='text-blue-100 text-sm leading-relaxed max-w-xs'>
+              {copy.brandText}
+            </p>
           </div>
 
           {/* Quick Links */}
@@ -146,6 +152,18 @@ export default function Footer() {
             <div className='flex gap-3'>
               {socialLinks.map((social, index) => {
                 const Icon = social.icon;
+                if (!social.href) {
+                  return (
+                    <span
+                      key={index}
+                      aria-label={social.label}
+                      title={social.label}
+                      className='w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center opacity-70 cursor-default'>
+                      <Icon className='w-5 h-5' strokeWidth={1.5} />
+                    </span>
+                  );
+                }
+
                 return (
                   <a
                     key={index}

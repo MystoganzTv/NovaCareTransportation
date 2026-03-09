@@ -57,6 +57,23 @@ export default function Navbar() {
   const languageLabel = language === 'es' ? 'ES' : 'US';
   const handleLanguageToggle = () =>
     setLanguage(prev => (prev === 'es' ? 'en' : 'es'));
+
+  const handleLogoClick = event => {
+    setIsMobileOpen(false);
+
+    if (location.pathname === '/') {
+      event.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    event.preventDefault();
+    navigate('/');
+    window.setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }, 60);
+  };
+
   const handleRequestRide = () => {
     setIsMobileOpen(false);
 
@@ -90,7 +107,7 @@ export default function Navbar() {
           <Link
             to='/'
             className='flex-shrink-0'
-            onClick={() => setIsMobileOpen(false)}>
+            onClick={handleLogoClick}>
             <img
               src={LOGO_URL}
               alt='Nova Care Transportation Logo'

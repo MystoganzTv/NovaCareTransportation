@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Phone, Mail, MapPin, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
-const CONTACT_HEADER_BANNER_IMAGE = '/banner/NovaCare-Banner.png';
+const CONTACT_HEADER_BANNER_IMAGE = '/banner/NovaCare-Banner.jpg';
 
 const getTodayDateString = () => {
   const now = new Date();
