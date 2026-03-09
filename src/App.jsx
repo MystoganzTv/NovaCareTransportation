@@ -1,8 +1,12 @@
-import { Link, BrowserRouter, Route, Routes } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Link, BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import AdminDashboard from './pages/AdminDashboard';
 import RequestRide from './pages/RequestRide';
+import AdminLogin from './pages/AdminLogin';
 import { LanguageProvider } from './context/LanguageContext';
+import ProtectedAdminRoute from './components/admin/ProtectedAdminRoute';
+import { initAnalytics, trackPageView } from './lib/analytics';
 
 function NotFound() {
   return (
@@ -22,15 +26,39 @@ function NotFound() {
   );
 }
 
+function AnalyticsTracker() {
+  const location = useLocation();
+
+  useEffect(() => {
+    initAnalytics();
+  }, []);
+
+  useEffect(() => {
+    const path = `${location.pathname}${location.search}${location.hash}`;
+    trackPageView(path);
+  }, [location.pathname, location.search, location.hash]);
+
+  return null;
+}
+
 export default function App() {
   return (
     <LanguageProvider>
       <BrowserRouter>
+        <AnalyticsTracker />
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/BookRide' element={<RequestRide />} />
           <Route path='/request-ride' element={<RequestRide />} />
-          <Route path='/admin' element={<AdminDashboard />} />
+          <Route path='/admin/login' element={<AdminLogin />} />
+          <Route
+            path='/admin'
+            element={
+              <ProtectedAdminRoute>
+                <AdminDashboard />
+              </ProtectedAdminRoute>
+            }
+          />
           <Route path='*' element={<NotFound />} />
         </Routes>
       </BrowserRouter>

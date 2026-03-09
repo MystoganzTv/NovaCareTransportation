@@ -15,10 +15,15 @@ A responsive landing website for NovaCare Transportation (NEMT), built with Reac
 - Responsive landing page (desktop + mobile)
 - Functional hero CTAs
 - Services, benefits, testimonials, and partner sections
+- FAQ with interactive expand/collapse behavior
 - Contact form with:
   - Ride request flow
   - Date picker (past dates blocked)
   - Email delivery via FormSubmit
+  - Anti-spam protection (honeypot + minimum-fill-time + submission rate limiting)
+  - Auto-response confirmation emails with request ID
+- Admin dashboard protected by credential login (`/admin/login`)
+- Google Analytics page tracking and Search Console verification support
 - Footer with active legal links:
   - Privacy Policy
   - Terms of Service
@@ -69,6 +74,21 @@ The contact form uses FormSubmit:
 Related file:
 
 - `src/components/landing/ContactSection.jsx`
+
+## Environment Variables
+
+Create a local `.env` using `.env.example`:
+
+```bash
+cp .env.example .env
+```
+
+Then configure:
+
+- `VITE_GA_MEASUREMENT_ID`: Google Analytics 4 measurement ID
+- `VITE_GOOGLE_SITE_VERIFICATION`: Search Console verification token
+- `VITE_ADMIN_EMAIL`: admin login email for `/admin`
+- `VITE_ADMIN_PASSWORD`: admin login password for `/admin`
 
 ## Legal Note
 

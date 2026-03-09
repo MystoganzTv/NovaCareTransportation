@@ -16,6 +16,8 @@ import {
 import Footer from '../components/landing/Footer';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '../context/LanguageContext';
+import { createFormSpamGuard } from '@/lib/spamProtection';
+import { trackLeadFormSubmission } from '@/lib/analytics';
 
 const FORMSUBMIT_ENDPOINT =
   'https://formsubmit.co/ajax/enrique.padron853@gmail.com';
@@ -40,6 +42,12 @@ const buildTimeOptions = () => {
 };
 
 const TIME_OPTIONS = buildTimeOptions();
+const RIDE_SPAM_GUARD = createFormSpamGuard({
+  storageKey: 'novacare_ride_form_submissions',
+  minFillMs: 3500,
+  windowMs: 15 * 60 * 1000,
+  maxSubmissionsPerWindow: 4,
+});
 
 const initialForm = {
   full_name: '',
@@ -52,7 +60,13 @@ const initialForm = {
   wheelchair: false,
   passengers: 1,
   notes: '',
+  website: '',
 };
+
+const buildRequestId = prefix =>
+  `${prefix}-${Date.now().toString(36).toUpperCase()}-${Math.floor(
+    1000 + Math.random() * 9000
+  )}`;
 
 function SummaryRow({ label, value }) {
   return (
@@ -67,8 +81,10 @@ export default function RequestRide() {
   const { language } = useLanguage();
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  const [submittedRequestId, setSubmittedRequestId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [formStartedAt, setFormStartedAt] = useState(() => Date.now());
   const [form, setForm] = useState(initialForm);
   const minRideDate = useMemo(() => getTodayDateString(), []);
 
@@ -109,9 +125,14 @@ export default function RequestRide() {
           helpText: 'Necesitas ayuda para reservar?',
           requiredError: 'Completa todos los campos requeridos.',
           dateError: 'Selecciona hoy o una fecha futura.',
+          spamError:
+            'No pudimos validar tu solicitud. Espera unos segundos y vuelve a intentarlo.',
+          rateLimitError:
+            'Recibimos varias solicitudes en poco tiempo. Intenta de nuevo en unos minutos.',
           successTitle: 'Solicitud Recibida',
           successText:
             'Tu solicitud fue enviada correctamente. Te contactaremos pronto para confirmar.',
+          requestIdLabel: 'Numero de solicitud',
           summaryNote:
             'Revisa los datos antes de enviar. Esta solicitud no confirma automaticamente el viaje.',
           yes: 'Si',
@@ -128,6 +149,7 @@ export default function RequestRide() {
           rowPassengers: 'Pasajeros',
           rowWheelchair: 'Silla de ruedas',
           rowNotes: 'Notas',
+          autoResponseTitle: 'Confirmacion de solicitud de viaje',
         }
       : {
           title: 'Book Your Ride',
@@ -164,9 +186,14 @@ export default function RequestRide() {
           helpText: 'Need help with booking?',
           requiredError: 'Please complete all required fields.',
           dateError: 'Please choose today or a future date.',
+          spamError:
+            'We could not validate your request. Please wait a few seconds and try again.',
+          rateLimitError:
+            'We received multiple submissions in a short time. Please try again in a few minutes.',
           successTitle: 'Request Received',
           successText:
             'Your ride request was sent successfully. We will contact you soon to confirm.',
+          requestIdLabel: 'Request ID',
           summaryNote:
             'Please review all details before sending. This request does not auto-confirm the ride.',
           yes: 'Yes',
@@ -183,7 +210,13 @@ export default function RequestRide() {
           rowPassengers: 'Passengers',
           rowWheelchair: 'Wheelchair',
           rowNotes: 'Notes',
+          autoResponseTitle: 'Ride Request Confirmation',
         };
+
+  const buildAutoResponseMessage = requestId =>
+    language === 'es'
+      ? `${copy.autoResponseTitle}\n\n${copy.requestIdLabel}: ${requestId}\n${copy.rowName}: ${form.full_name}\n${copy.rowPhone}: ${form.phone}\n${copy.rowDate}: ${form.pickup_date}\n${copy.rowTime}: ${form.pickup_time}\n${copy.rowPickup}: ${form.pickup_address}\n${copy.rowDestination}: ${form.destination_address}\n${copy.rowPassengers}: ${form.passengers}\n${copy.rowWheelchair}: ${form.wheelchair ? copy.yes : copy.no}\n\nGracias por confiar en NovaCare Transportation.`
+      : `${copy.autoResponseTitle}\n\n${copy.requestIdLabel}: ${requestId}\n${copy.rowName}: ${form.full_name}\n${copy.rowPhone}: ${form.phone}\n${copy.rowDate}: ${form.pickup_date}\n${copy.rowTime}: ${form.pickup_time}\n${copy.rowPickup}: ${form.pickup_address}\n${copy.rowDestination}: ${form.destination_address}\n${copy.rowPassengers}: ${form.passengers}\n${copy.rowWheelchair}: ${form.wheelchair ? copy.yes : copy.no}\n\nThank you for choosing NovaCare Transportation.`;
 
   const updateField = (field, value) => {
     setError('');
@@ -233,16 +266,34 @@ export default function RequestRide() {
       return;
     }
 
+    const spamCheck = RIDE_SPAM_GUARD.validate({
+      honeypotValue: form.website,
+      formStartedAt,
+    });
+    if (!spamCheck.ok) {
+      if (spamCheck.reason === 'rate_limited') {
+        setError(copy.rateLimitError);
+      } else {
+        setError(copy.spamError);
+      }
+      return;
+    }
+
     setIsSubmitting(true);
     setError('');
     try {
+      const requestId = buildRequestId('RIDE');
       const payload = new FormData();
       payload.append('_subject', `${copy.subjectPrefix} - ${form.full_name}`);
       payload.append('_template', 'table');
       payload.append('_captcha', 'false');
+      payload.append('_honey', 'website');
+      payload.append('website', form.website || '');
       if (form.email) {
         payload.append('_replyto', form.email);
+        payload.append('_autoresponse', buildAutoResponseMessage(requestId));
       }
+      payload.append('Request ID', requestId);
       payload.append('Request Type', copy.requestType);
       payload.append('Full Name', form.full_name);
       payload.append('Phone', form.phone);
@@ -267,9 +318,13 @@ export default function RequestRide() {
         throw new Error('Request failed');
       }
 
+      RIDE_SPAM_GUARD.markSubmitted();
+      trackLeadFormSubmission('ride_request', requestId);
+      setSubmittedRequestId(requestId);
       setSubmitted(true);
       setForm(initialForm);
       setStep(0);
+      setFormStartedAt(Date.now());
     } catch {
       setError(
         language === 'es'
@@ -295,6 +350,12 @@ export default function RequestRide() {
             {copy.successTitle}
           </h2>
           <p className='text-gray-600 mb-7'>{copy.successText}</p>
+          {submittedRequestId && (
+            <p className='text-sm text-slate-500 mb-7'>
+              <span className='font-semibold'>{copy.requestIdLabel}:</span>{' '}
+              {submittedRequestId}
+            </p>
+          )}
           <a
             href='/'
             className='inline-block bg-[#1E3A8A] text-white px-8 py-3 rounded-xl font-semibold hover:bg-[#2563EB] transition-colors'>
@@ -368,6 +429,18 @@ export default function RequestRide() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.25 }}
             className='bg-white rounded-2xl shadow-lg p-6 sm:p-8'>
+            <div className='hidden' aria-hidden='true'>
+              <label htmlFor='ride-website'>Website</label>
+              <input
+                id='ride-website'
+                type='text'
+                tabIndex='-1'
+                autoComplete='off'
+                value={form.website}
+                onChange={e => updateField('website', e.target.value)}
+              />
+            </div>
+
             {step === 0 && (
               <div className='space-y-5'>
                 <h2 className='text-xl font-bold text-[#1E3A8A] flex items-center gap-2'>
@@ -430,7 +503,7 @@ export default function RequestRide() {
                   {copy.tripTitle}
                 </h2>
 
-                <div className='grid grid-cols-2 gap-4'>
+                <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
                   <div>
                     <label className='block text-sm font-semibold text-gray-700 mb-1'>
                       {copy.dateLabel} *
@@ -500,7 +573,7 @@ export default function RequestRide() {
                   </div>
                 </div>
 
-                <div className='grid grid-cols-2 gap-4'>
+                <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
                   <div>
                     <label className='block text-sm font-semibold text-gray-700 mb-1'>
                       {copy.passengersLabel}

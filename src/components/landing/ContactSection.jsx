@@ -5,8 +5,21 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Phone, Mail, MapPin, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
+import { createFormSpamGuard } from '@/lib/spamProtection';
+import { trackLeadFormSubmission } from '@/lib/analytics';
 
 const CONTACT_HEADER_BANNER_IMAGE = '/banner/NovaCare-Banner.jpg';
+const PARTNER_SPAM_GUARD = createFormSpamGuard({
+  storageKey: 'novacare_partner_form_submissions',
+  minFillMs: 3500,
+  windowMs: 15 * 60 * 1000,
+  maxSubmissionsPerWindow: 4,
+});
+
+const buildRequestId = prefix =>
+  `${prefix}-${Date.now().toString(36).toUpperCase()}-${Math.floor(
+    1000 + Math.random() * 9000
+  )}`;
 
 const getTodayDateString = () => {
   const now = new Date();
@@ -40,9 +53,15 @@ export default function ContactSection() {
           sendError:
             'No pudimos enviar tu mensaje ahora. Llamanos al (305) 610-2811 o escribe a enrique.padron853@gmail.com.',
           dateError: 'Selecciona hoy o una fecha futura para la reunion.',
+          spamError:
+            'No pudimos validar esta solicitud. Espera unos segundos e intenta de nuevo.',
+          rateLimitError:
+            'Recibimos muchas solicitudes en poco tiempo. Intenta de nuevo en unos minutos.',
           subjectPrefix: 'Nueva solicitud de reunion de alianza de',
           requestType: 'Solicitud de Reunion de Alianza',
+          requestIdLabel: 'Numero de solicitud',
           notProvided: 'No proporcionado',
+          autoResponseTitle: 'Confirmacion de reunion de alianza',
           phoneLabel: 'Telefono',
           emailLabel: 'Correo',
           serviceAreaLabel: 'Area de Servicio',
@@ -71,9 +90,15 @@ export default function ContactSection() {
           sendError:
             'We could not send your message right now. Please call us at (305) 610-2811 or email enrique.padron853@gmail.com.',
           dateError: 'Please select today or a future date for your meeting.',
+          spamError:
+            'We could not validate this request. Please wait a few seconds and try again.',
+          rateLimitError:
+            'We received too many submissions in a short time. Please try again in a few minutes.',
           subjectPrefix: 'New Partner Meeting Request from',
           requestType: 'Partner Meeting Request',
+          requestIdLabel: 'Request ID',
           notProvided: 'Not provided',
+          autoResponseTitle: 'Partner Meeting Request Confirmation',
           phoneLabel: 'Phone',
           emailLabel: 'Email',
           serviceAreaLabel: 'Service Area',
@@ -81,9 +106,16 @@ export default function ContactSection() {
           serviceAreaSubtext: 'Herndon, Reston, Fairfax, Ashburn',
         };
 
+  const buildAutoResponseMessage = requestId =>
+    language === 'es'
+      ? `${copy.autoResponseTitle}\n\n${copy.requestIdLabel}: ${requestId}\n${copy.fullName}: ${formData.name}\n${copy.organizationName}: ${formData.organization || copy.notProvided}\n${copy.emailAddress}: ${formData.email}\n${copy.phoneNumber}: ${formData.phone || copy.notProvided}\n${copy.meetingDate}: ${formData.meetingDate || copy.notProvided}\n\nGracias por contactarnos. Nuestro equipo respondera pronto.`
+      : `${copy.autoResponseTitle}\n\n${copy.requestIdLabel}: ${requestId}\n${copy.fullName}: ${formData.name}\n${copy.organizationName}: ${formData.organization || copy.notProvided}\n${copy.emailAddress}: ${formData.email}\n${copy.phoneNumber}: ${formData.phone || copy.notProvided}\n${copy.meetingDate}: ${formData.meetingDate || copy.notProvided}\n\nThank you for contacting us. Our team will get back to you shortly.`;
+
   const FORMSUBMIT_ENDPOINT =
     'https://formsubmit.co/ajax/enrique.padron853@gmail.com';
   const minMeetingDate = getTodayDateString();
+  const [formStartedAt, setFormStartedAt] = useState(() => Date.now());
+  const [submittedRequestId, setSubmittedRequestId] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     organization: '',
@@ -91,6 +123,7 @@ export default function ContactSection() {
     phone: '',
     meetingDate: '',
     message: '',
+    website: '',
   });
 
   const [submitted, setSubmitted] = useState(false);
@@ -109,6 +142,8 @@ export default function ContactSection() {
 
   const handleSubmit = async e => {
     e.preventDefault();
+    setSubmitted(false);
+    setSubmittedRequestId('');
     setSubmitError('');
     setIsSubmitting(true);
 
@@ -118,12 +153,29 @@ export default function ContactSection() {
       return;
     }
 
+    const spamCheck = PARTNER_SPAM_GUARD.validate({
+      honeypotValue: formData.website,
+      formStartedAt,
+    });
+    if (!spamCheck.ok) {
+      setSubmitError(
+        spamCheck.reason === 'rate_limited' ? copy.rateLimitError : copy.spamError
+      );
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
+      const requestId = buildRequestId('PARTNER');
       const payload = new FormData();
       payload.append('_subject', `${copy.subjectPrefix} ${formData.name}`);
       payload.append('_template', 'table');
       payload.append('_captcha', 'false');
+      payload.append('_honey', 'website');
+      payload.append('website', formData.website || '');
       payload.append('_replyto', formData.email);
+      payload.append('_autoresponse', buildAutoResponseMessage(requestId));
+      payload.append('Request ID', requestId);
       payload.append('Request Type', copy.requestType);
       payload.append('Full Name', formData.name);
       payload.append(
@@ -151,6 +203,9 @@ export default function ContactSection() {
         throw new Error('Request failed');
       }
 
+      PARTNER_SPAM_GUARD.markSubmitted();
+      trackLeadFormSubmission('partner_meeting_request', requestId);
+      setSubmittedRequestId(requestId);
       setSubmitted(true);
       setFormData({
         name: '',
@@ -159,7 +214,9 @@ export default function ContactSection() {
         phone: '',
         meetingDate: '',
         message: '',
+        website: '',
       });
+      setFormStartedAt(Date.now());
     } catch {
       setSubmitError(copy.sendError);
     } finally {
@@ -290,6 +347,20 @@ export default function ContactSection() {
             </h3>
 
             <form onSubmit={handleSubmit} className='space-y-6'>
+              <div className='hidden' aria-hidden='true'>
+                <label htmlFor='partner-website'>Website</label>
+                <input
+                  id='partner-website'
+                  type='text'
+                  tabIndex='-1'
+                  autoComplete='off'
+                  value={formData.website}
+                  onChange={e =>
+                    setFormData({ ...formData, website: e.target.value })
+                  }
+                />
+              </div>
+
               <div>
                 <label className='block text-sm font-semibold text-gray-700 mb-2'>
                   {copy.fullName}
@@ -395,11 +466,18 @@ export default function ContactSection() {
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className='mt-4 flex items-center gap-3 bg-green-50 border border-green-200 rounded-xl p-4'>
+                className='mt-4 flex items-start gap-3 bg-green-50 border border-green-200 rounded-xl p-4'>
                 <CheckCircle2 className='w-5 h-5 text-green-600 flex-shrink-0' />
-                <p className='text-green-700 font-medium text-sm'>
-                  {copy.sentSuccess}
-                </p>
+                <div>
+                  <p className='text-green-700 font-medium text-sm'>
+                    {copy.sentSuccess}
+                  </p>
+                  {submittedRequestId && (
+                    <p className='text-green-800/90 text-xs mt-1'>
+                      {copy.requestIdLabel}: {submittedRequestId}
+                    </p>
+                  )}
+                </div>
               </motion.div>
             )}
 
